@@ -6,7 +6,7 @@ import {
   PlusCircle, 
   Search, 
   AlertTriangle, 
-  CheckCircle, 
+  CheckCircle, h
   Download,
   Mail,
   Phone,
@@ -936,7 +936,7 @@ export default function App() {
                 Selecione um arquivo CSV com as seguintes colunas:
                 <br />
                 <code className="text-xs bg-gray-100 p-1 rounded mt-2 block">
-                  Unidade, Bloco, Nome, Nome/Razão Social, E-mail(s), Telefone/WhatsApp
+                  Unidade, Bloco, Nome/Razão Social, E-mail(s), Telefone/WhatsApp
                 </code>
               </p>
               
