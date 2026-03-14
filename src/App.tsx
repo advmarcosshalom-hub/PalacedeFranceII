@@ -54,15 +54,11 @@ export default function App() {
     fetchUnits();
   }, []);
 
-  const fetchUnits = async () => {
-    try {
-      const res = await fetch('/api/units');
-      const data = await res.json();
+const fetchUnits = () => {
+      const stored = localStorage.getItem('palace_units');
+      const data = stored ? JSON.parse(stored) : [];
       setUnits(data);
-    } catch (err) {
-      console.error("Failed to fetch units", err);
-    }
-  };
+};
 
   const fetchHistory = async (unitId: number) => {
     try {
