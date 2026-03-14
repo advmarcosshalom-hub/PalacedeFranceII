@@ -6,7 +6,7 @@ import {
   PlusCircle, 
   Search, 
   AlertTriangle, 
-  CheckCircle, h
+  CheckCircle,
   Download,
   Mail,
   Phone,
