@@ -60,16 +60,12 @@ const fetchUnits = () => {
       setUnits(data);
 };
 
-  const fetchHistory = async (unitId: number) => {
-    try {
-      const res = await fetch(`/api/notifications/history/${unitId}`);
-      const data = await res.json();
-      setHistory(data);
-    } catch (err) {
-      console.error("Failed to fetch history", err);
-    }
-  };
-
+const fetchHistory = (unitId: number) => {
+      const stored = localStorage.getItem('palace_notifications');
+          const all: any[] = stored ? JSON.parse(stored) : [];
+              setHistory(all.filter((n: any) => n.unit_id === unitId).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+                };
+}
   const handleUnitSelect = (unit: Unit) => {
     setSelectedUnit(unit);
     fetchHistory(unit.id);
@@ -330,36 +326,36 @@ const fetchUnits = () => {
     doc.save(`Notificacao_${selectedUnit.unit_number}_${selectedUnit.block}.pdf`);
   };
 
-  const handleUpdateUnit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingUnit) return;
-
-    try {
-      const res = await fetch(`/api/units/${editingUnit.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingUnit)
-      });
-      if (res.ok) {
-        fetchUnits();
-        if (selectedUnit?.id === editingUnit.id) {
-          setSelectedUnit(editingUnit);
-        }
-        setShowEditUnitModal(false);
-        setEditingUnit(null);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao atualizar unidade.");
-    }
-  };
-
+const handleUpdateUnit = (e: React.FormEvent) => {
+      e.preventDefault();
+          if (!editingUnit) return;
+              try {
+                    const stored = localStorage.getItem('palace_units');
+                          const units_data: any[] = stored ? JSON.parse(stored) : [];
+                                const idx = units_data.findIndex((u: any) => u.id === editingUnit.id);
+                                      if (idx !== -1) {
+                                                units_data[idx] = editingUnit;
+                                                        localStorage.setItem('palace_units', JSON.stringify(units_data));
+                                                                fetchUnits();
+                                                                        if (selectedUnit?.id === editingUnit.id) {
+                                                                                  setSelectedUnit(editingUnit);
+                                                                                          }
+                                                                                                  setShowEditUnitModal(false);
+                                                                                                          setEditingUnit(null);
+                                                                                                                }
+                                                                                                                    } catch (err) {
+                                                                                                                          console.error(err);
+                                                                                                                                alert("Erro ao atualizar unidade.");
+                                                                                                                                    }
+                                                                                                                                      };
+                                      }
+}
   const handleFileUpload = async (file: File) => {
     setLoading(true);
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
-        const text = event.target?.result as string;
+        const text = (event.target?.result as string).replace(/^\uFEFF/, '');
         const lines = text.split(/\r?\n/).filter(l => l.trim());
         
         // Find the header row
@@ -428,7 +424,7 @@ const fetchUnits = () => {
           return result;
         };
 
-        const headers = parseCSVLine(lines[headerIndex], delimiter);
+        const headers = parseCSVLine(lines[headerIndex], delimiter).map(h => h.trim().toLowerCase());
         
         const data = lines.slice(headerIndex + 1).map(line => {
           const values = parseCSVLine(line, delimiter);
@@ -437,7 +433,7 @@ const fetchUnits = () => {
             if (header) obj[header] = values[i] || '';
           });
           return obj;
-        });
+        }).filter(obj => Object.values(obj).some(v => v !== ''));
 
         const res = await fetch('/api/units/import', {
           method: 'POST',
