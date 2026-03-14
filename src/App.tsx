@@ -383,11 +383,8 @@ export default function App() {
         if (headerIndex === -1) {
           // Fallback to previous logic if strict check fails
           headerIndex = lines.findIndex(line => 
-            line.toLowerCase().includes('unidade') || 
-            line.toLowerCase().includes('nome') ||
-            line.toLowerCase().includes('unit') ||
-            line.toLowerCase().includes('propriet') ||
-            line.toLowerCase().includes('condom')
+            line.toLowerCase().includes('unidade') &&
+                        line.toLowerCase().includes('bloco')
           );
         }
 
